@@ -69,7 +69,8 @@ const makeApiCall = async <T>(
     try {
       const ai = new GoogleGenAI({apiKey});
       const result = await apiCall(ai);
-      // Success, return the result. The currentKeyIndex remains for the next operation.
+      // Success! Rotate key for the *next* call to distribute load.
+      currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
       return result;
     } catch (error: any) {
       lastError = error;

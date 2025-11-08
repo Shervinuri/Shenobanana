@@ -291,7 +291,7 @@ const App: React.FC = () => {
                   rows={4}
                   dir="rtl"
                   className="w-full bg-gray-900 border border-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-lg placeholder-gradient"
-                  placeholder={`مثلاً: با اسپری روی دیوار بنویس "مرگ بر خامنه‌ای"`}
+                  placeholder={`مثلاً: یک پوستر زیبا از طبیعت ایران که روی آن نوشته «ایران زیبا»`}
                   value={userPrompt}
                   onChange={(e) => setUserPrompt(e.target.value)}
                 />
