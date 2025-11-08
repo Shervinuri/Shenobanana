@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.shen-gradient-text {
+  background: linear-gradient(-45deg, #1c1917, #fde047, #000000, #facc15);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-animation 8s ease infinite;
+  font-weight: 700;
+}
+
+.placeholder-gradient::placeholder {
+  background: linear-gradient(-45deg, #1c1917, #fde047, #000000, #facc15);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-animation 8s ease infinite;
+  font-weight: normal;
+  opacity: 0.7;
+}

@@ -1,0 +1,149 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import React from 'react';
+import {
+  ArrowDown,
+  ArrowRight,
+  Banana,
+  Baseline,
+  ChevronDown,
+  Copy,
+  Download,
+  // FIX: Add Film import
+  Film,
+  Hourglass,
+  Image,
+  // FIX: Add KeyRound import
+  KeyRound,
+  Layers,
+  Loader2,
+  Plus,
+  RectangleHorizontal,
+  RectangleVertical,
+  RefreshCw,
+  SlidersHorizontal,
+  Sparkles,
+  Square,
+  Tv,
+  UploadCloud,
+  Wand2,
+  X,
+} from 'lucide-react';
+
+const defaultProps = {
+  strokeWidth: 1.5,
+};
+
+// FIX: Add KeyIcon export
+export const KeyIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <KeyRound {...defaultProps} {...props} />
+);
+
+export const ArrowPathIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <RefreshCw {...defaultProps} {...props} />;
+
+export const SparklesIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Sparkles {...defaultProps} {...props} />
+);
+
+export const BananaIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Banana {...defaultProps} {...props} />
+);
+
+export const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Plus {...defaultProps} {...props} />
+);
+
+export const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <ChevronDown {...defaultProps} {...props} />;
+
+export const SlidersHorizontalIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <SlidersHorizontal {...defaultProps} {...props} />;
+
+export const ArrowRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <ArrowRight {...defaultProps} {...props} />;
+
+export const RectangleStackIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <Layers {...defaultProps} {...props} />;
+
+export const XMarkIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <X {...defaultProps} {...props} />
+);
+
+export const TextModeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Baseline {...defaultProps} {...props} />
+);
+
+export const FramesModeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <Image {...defaultProps} {...props} />;
+
+// FIX: Add ReferencesModeIcon export
+export const ReferencesModeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <Film {...defaultProps} {...props} />;
+
+export const TvIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Tv {...defaultProps} {...props} />
+);
+
+// FIX: Add FilmIcon export
+export const FilmIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Film {...defaultProps} {...props} />
+);
+
+export const UploadCloudIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <UploadCloud {...defaultProps} {...props} />;
+export const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Download {...defaultProps} {...props} />
+);
+export const WandIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Wand2 {...defaultProps} {...props} />
+);
+export const CopyIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Copy {...defaultProps} {...props} />
+);
+export const ImageIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Image {...defaultProps} {...props} />
+);
+
+// FIX: Add VideoIcon export
+export const VideoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Film {...defaultProps} {...props} />
+);
+
+export const LoaderIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Loader2 {...defaultProps} {...props} />
+);
+export const FileTextIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <Baseline {...defaultProps} {...props} />;
+
+// This icon had a different stroke width in the original file, so we preserve it.
+export const CurvedArrowDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <ArrowDown {...props} strokeWidth={3} />;
+
+export const SquareIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Square {...defaultProps} {...props} />
+);
+
+export const RectangleVerticalIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
+  props,
+) => <RectangleVertical {...defaultProps} {...props} />;
+
+export const RectangleHorizontalIcon: React.FC<
+  React.SVGProps<SVGSVGElement>
+> = (props) => <RectangleHorizontal {...defaultProps} {...props} />;
+
+export const HourglassIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <Hourglass {...defaultProps} {...props} />
+);
