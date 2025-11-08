@@ -10,10 +10,11 @@ import {
 import {
   EngineeredPrompt,
   ImageFile,
-  // FIX: Import TargetModel
   TargetModel,
+  AspectRatio,
 } from '../types';
 
+// A pool of API keys to rotate through.
 const API_KEYS = [
   "AIzaSyDrA2-nxoGG5VoupuYhpXcOrQiE0w2tqUM",
   "AIzaSyCQAFtl1hWQ4AkdYR1bwkvvEzfkyOqrDF8",
@@ -56,44 +57,54 @@ const API_KEYS = [
 
 let currentKeyIndex = 0;
 
-const makeApiCall = async <T>(apiCall: (ai: GoogleGenAI) => Promise<T>): Promise<T> => {
-    const maxRetries = API_KEYS.length;
-    let attempts = 0;
-    let lastError: unknown;
+const makeApiCall = async <T>(
+  apiCall: (ai: GoogleGenAI) => Promise<T>,
+): Promise<T> => {
+  const maxRetries = API_KEYS.length;
+  let attempts = 0;
+  let lastError: unknown;
 
-    while (attempts < maxRetries) {
-        const apiKey = API_KEYS[currentKeyIndex];
-        try {
-            const ai = new GoogleGenAI({ apiKey });
-            const result = await apiCall(ai);
-            // Success, return the result. The currentKeyIndex remains for the next operation.
-            return result;
-        } catch (error: any) {
-            lastError = error;
-            const errorMessage = error.message || '';
-            console.warn(`API call with key index ${currentKeyIndex} failed: ${errorMessage}.`);
-            
-            const isRetryableError =
-                errorMessage.includes('API key not valid') ||
-                errorMessage.includes('API_KEY_INVALID') ||
-                errorMessage.includes('RESOURCE_EXHAUSTED') ||
-                errorMessage.includes('Quota exceeded');
-            
-            if (isRetryableError) {
-                // This key is likely invalid or exhausted, move to the next one.
-                currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
-                attempts++;
-            } else {
-                // This is not a key-related error (e.g., bad prompt), so re-throw immediately.
-                throw lastError;
-            }
-        }
+  while (attempts < maxRetries) {
+    const apiKey = API_KEYS[currentKeyIndex];
+    try {
+      const ai = new GoogleGenAI({apiKey});
+      const result = await apiCall(ai);
+      // Success, return the result. The currentKeyIndex remains for the next operation.
+      return result;
+    } catch (error: any) {
+      lastError = error;
+      const errorMessage = error.message || '';
+      console.warn(
+        `API call with key index ${currentKeyIndex} failed: ${errorMessage}.`,
+      );
+
+      const isRetryableError =
+        errorMessage.includes('API key not valid') ||
+        errorMessage.includes('API_KEY_INVALID') ||
+        errorMessage.includes('RESOURCE_EXHAUSTED') ||
+        errorMessage.includes('Quota exceeded');
+
+      if (isRetryableError) {
+        // This key is likely invalid or exhausted, move to the next one.
+        console.log(`Switching to next API key.`);
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        attempts++;
+      } else {
+        // This is not a key-related error (e.g., bad prompt), so re-throw immediately.
+        throw lastError;
+      }
     }
-    
-    // If the loop completes, all keys have failed.
-    throw new Error("All available API keys are exhausted. Please try again later.", { cause: lastError });
-};
+  }
 
+  // If the loop completes, all keys have failed.
+  // FIX: The `new Error(message, { cause })` constructor is not supported in all environments.
+  // Replaced with a compatible approach of assigning `cause` after instantiation.
+  const error = new Error(
+    'All available API keys are exhausted. Please try again later.',
+  );
+  (error as any).cause = lastError;
+  throw error;
+};
 
 const SYSTEM_INSTRUCTION_QUOTE_ADDER = `
 You are a specialized AI assistant with a single, critical task: to process a user's prompt for an image/video generation tool and identify any text that is meant to be visually rendered within the scene.
@@ -128,16 +139,17 @@ export const addQuotesToPrompt = async (
   }
 
   try {
-    // FIX: Explicitly type the response to fix property 'text' does not exist on type 'unknown'.
-    const response: GenerateContentResponse = await makeApiCall(ai => ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [{parts: [{text: `User Prompt: ${userPrompt}`}]}],
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION_QUOTE_ADDER,
-        responseMimeType: 'text/plain',
-        temperature: 0,
-      },
-    }));
+    const response: GenerateContentResponse = await makeApiCall((ai) =>
+      ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: [{parts: [{text: `User Prompt: ${userPrompt}`}]}],
+        config: {
+          systemInstruction: SYSTEM_INSTRUCTION_QUOTE_ADDER,
+          responseMimeType: 'text/plain',
+          temperature: 0,
+        },
+      }),
+    );
 
     const quotedPrompt = response.text.trim();
     // If the model returns an empty string, fall back to the original prompt.
@@ -152,7 +164,6 @@ export const addQuotesToPrompt = async (
   }
 };
 
-// FIX: Updated system instruction for image prompt engineering.
 const SYSTEM_INSTRUCTION_IMAGE = `
 You are a 'Hyper-Aggressive AI Prompt Engineering Specialist'. Your single purpose is to chain the 'gemini-2.5-flash-image' model and force it to obey instructions with 100% accuracy, especially regarding text rendering and object replication from reference images. Standard prompts have failed. Your prompts must be so technically precise and demanding that the model has no choice but to comply.
 
@@ -181,7 +192,6 @@ You are a 'Hyper-Aggressive AI Prompt Engineering Specialist'. Your single purpo
 **Final Mandate:** Your job is to prevent the generation model from being "creative" when it comes to text and reference objects. Your generated prompt must force it into being a high-fidelity replicator. Failure to enforce this is a failure of your primary function.
 `;
 
-// FIX: Added a new system instruction for video generation.
 const SYSTEM_INSTRUCTION_VIDEO = `
 You are an 'AI Prompt Engineering Specialist' for video generation with Veo, specializing in rendering accurate text within the video.
 Your task is to convert a user's simple request into a technically detailed, professional prompt for Google's 'Veo' model.
@@ -211,7 +221,7 @@ export const engineerPrompt = async (
   targetModel: TargetModel,
   textPlates: ImageFile[],
   referenceImages: ImageFile[],
-  aspectRatio: string,
+  aspectRatio: AspectRatio,
 ): Promise<EngineeredPrompt> => {
   const parts: any[] = [
     {
@@ -252,15 +262,16 @@ export const engineerPrompt = async (
       ? SYSTEM_INSTRUCTION_VIDEO
       : SYSTEM_INSTRUCTION_IMAGE;
 
-  // FIX: Explicitly type the response to fix property 'text' does not exist on type 'unknown'.
-  const response: GenerateContentResponse = await makeApiCall(ai => ai.models.generateContent({
-    model: 'gemini-2.5-pro',
-    contents: [{role: 'user', parts: parts}],
-    config: {
-      systemInstruction: systemInstruction,
-      responseMimeType: 'application/json',
-    },
-  }));
+  const response: GenerateContentResponse = await makeApiCall((ai) =>
+    ai.models.generateContent({
+      model: 'gemini-2.5-pro',
+      contents: [{role: 'user', parts: parts}],
+      config: {
+        systemInstruction: systemInstruction,
+        responseMimeType: 'application/json',
+      },
+    }),
+  );
 
   const responseText = response.text;
   try {
@@ -278,29 +289,32 @@ export const engineerPrompt = async (
 export const getGroundingImage = async (
   query: string,
 ): Promise<ImageFile> => {
-  const prompt = `Create a high-resolution, photorealistic, studio-quality photograph of: ${query}. 
-The subject should be clearly visible, centered, and isolated on a neutral gray or white background. 
-Show the object from a standard, clear angle (e.g., a 3/4 view or side profile for a car). 
+  const prompt = `Create a high-resolution, photorealistic, studio-quality photograph of: ${query}.
+The subject should be clearly visible, centered, and isolated on a neutral gray or white background.
+Show the object from a standard, clear angle (e.g., a 3/4 view or side profile for a car).
 Ensure professional, even lighting with no harsh shadows.
 ABSOLUTE NEGATIVES: No people, no other objects, no text, no watermarks, no blurry backgrounds, no artistic filters, no unusual angles.`;
 
-  // FIX: Explicitly type the response to fix property 'candidates' does not exist on type 'unknown'.
-  const response: GenerateContentResponse = await makeApiCall(ai => ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: {parts: [{text: prompt}]},
-    config: {
-      responseModalities: [Modality.IMAGE],
-    },
-  }));
+  const response: GenerateContentResponse = await makeApiCall((ai) =>
+    ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: {parts: [{text: prompt}]},
+      config: {
+        responseModalities: [Modality.IMAGE],
+      },
+    }),
+  );
 
   for (const part of response.candidates[0].content.parts) {
     if (part.inlineData) {
       const base64ImageBytes: string = part.inlineData.data;
-      
+
       // Convert base64 to blob/file
       const fetchRes = await fetch(`data:image/png;base64,${base64ImageBytes}`);
       const blob = await fetchRes.blob();
-      const file = new File([blob], 'grounding_reference.png', { type: 'image/png' });
+      const file = new File([blob], 'grounding_reference.png', {
+        type: 'image/png',
+      });
 
       return {
         file,
@@ -311,7 +325,6 @@ ABSOLUTE NEGATIVES: No people, no other objects, no text, no watermarks, no blur
   }
   throw new Error('Failed to generate grounding image.');
 };
-
 
 export const generateImage = async (
   prompt: string,
@@ -329,14 +342,15 @@ export const generateImage = async (
     });
   });
 
-  // FIX: Explicitly type the response to fix property 'candidates' does not exist on type 'unknown'.
-  const response: GenerateContentResponse = await makeApiCall(ai => ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: {parts: parts},
-    config: {
-      responseModalities: [Modality.IMAGE],
-    },
-  }));
+  const response: GenerateContentResponse = await makeApiCall((ai) =>
+    ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: {parts: parts},
+      config: {
+        responseModalities: [Modality.IMAGE],
+      },
+    }),
+  );
 
   for (const part of response.candidates[0].content.parts) {
     if (part.inlineData) {

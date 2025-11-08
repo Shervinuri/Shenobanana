@@ -11,11 +11,9 @@ import {
   ChevronDown,
   Copy,
   Download,
-  // FIX: Add Film import
   Film,
   Hourglass,
   Image,
-  // FIX: Add KeyRound import
   KeyRound,
   Layers,
   Loader2,
@@ -36,7 +34,6 @@ const defaultProps = {
   strokeWidth: 1.5,
 };
 
-// FIX: Add KeyIcon export
 export const KeyIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <KeyRound {...defaultProps} {...props} />
 );
@@ -85,7 +82,6 @@ export const FramesModeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
   props,
 ) => <Image {...defaultProps} {...props} />;
 
-// FIX: Add ReferencesModeIcon export
 export const ReferencesModeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
   props,
 ) => <Film {...defaultProps} {...props} />;
@@ -94,7 +90,6 @@ export const TvIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <Tv {...defaultProps} {...props} />
 );
 
-// FIX: Add FilmIcon export
 export const FilmIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <Film {...defaultProps} {...props} />
 );
@@ -114,12 +109,9 @@ export const CopyIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 export const ImageIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <Image {...defaultProps} {...props} />
 );
-
-// FIX: Add VideoIcon export
 export const VideoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <Film {...defaultProps} {...props} />
 );
-
 export const LoaderIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <Loader2 {...defaultProps} {...props} />
 );

@@ -2,20 +2,18 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import React, {useCallback, useState, useEffect} from 'react';
+import React, {useCallback, useState} from 'react';
 import ImageResult from './components/ImageResult';
 import LoadingIndicator from './components/LoadingIndicator';
 import QuotaErrorDialog from './components/QuotaErrorDialog';
 import ReferenceImageUploader from './components/ReferenceImageUploader';
 import {
-  FileTextIcon,
+  BananaIcon,
   LoaderIcon,
   RectangleHorizontalIcon,
   RectangleStackIcon,
   RectangleVerticalIcon,
-  BananaIcon,
   SquareIcon,
-  KeyIcon,
 } from './components/icons';
 import {extractTextAndGeneratePlates} from './components/utils';
 import {
@@ -52,7 +50,6 @@ const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isQuotaError, setIsQuotaError] = useState(false);
 
-
   // User Inputs
   const [userPrompt, setUserPrompt] = useState('');
   const [referenceImages, setReferenceImages] = useState<ImageFile[]>([]);
@@ -71,7 +68,7 @@ const App: React.FC = () => {
     | null
   >(null);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
-  
+
   const handleError = (
     message: string,
     error?: unknown,
@@ -83,19 +80,17 @@ const App: React.FC = () => {
 
     // Check for the specific error from our service layer indicating all keys failed.
     if (errorDetails.includes('All available API keys are exhausted')) {
-        setIsQuotaError(true);
-        setAppState(AppState.IDLE);
-        return; // Stop further error handling
+      setIsQuotaError(true);
+      setAppState(AppState.IDLE);
+      return; // Stop further error handling
     }
-      
+
     const userFriendlyMessage = `${message}: ${errorDetails}`;
     setErrorMessage(userFriendlyMessage);
     setAppState(state);
   };
 
-  const handleGenerate = async (
-    retryConfig?: typeof lastConfig | null,
-  ) => {
+  const handleGenerate = async (retryConfig?: typeof lastConfig | null) => {
     const isRetry = !!retryConfig;
     const currentPrompt = isRetry ? '' : userPrompt;
 
@@ -134,18 +129,20 @@ const App: React.FC = () => {
           referenceImages,
           aspectRatio,
         );
-        
+
         promptToUse = `${engineeredPrompt.professional_prompt}\n\n${engineeredPrompt.text_replication_instruction}\n\nNegative Prompt: ${engineeredPrompt.negative_prompt}`;
         textPlatesToUse = textPlates;
         referenceImagesToUse = [...referenceImages];
 
         if (engineeredPrompt.grounding_search_query) {
-            setLoadingMessage(`Searching for reference: "${engineeredPrompt.grounding_search_query}"...`);
-            const groundingImage = await getGroundingImage(
-              engineeredPrompt.grounding_search_query,
-            );
-            referenceImagesToUse.push(groundingImage);
-          }
+          setLoadingMessage(
+            `Searching for reference: "${engineeredPrompt.grounding_search_query}"...`,
+          );
+          const groundingImage = await getGroundingImage(
+            engineeredPrompt.grounding_search_query,
+          );
+          referenceImagesToUse.push(groundingImage);
+        }
       }
 
       setLastConfig({
@@ -165,7 +162,7 @@ const App: React.FC = () => {
     } catch (error) {
       handleError('Generation failed', error);
     } finally {
-        setLoadingMessage('');
+      setLoadingMessage('');
     }
   };
 
@@ -287,14 +284,14 @@ const App: React.FC = () => {
                 <label
                   htmlFor="user_prompt"
                   className="block text-sm font-medium text-gray-300 mb-2 text-right">
-                  <span className="shen-gradient-text">رو چی با چی بنویسم برات چی؟</span>
+                  <span className="shen-gradient-text">چی بکشم با چه نوشته‌ای؟</span>
                 </label>
                 <textarea
                   id="user_prompt"
                   rows={4}
                   dir="rtl"
                   className="w-full bg-gray-900 border border-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-lg placeholder-gradient"
-                  placeholder={`مثلاً: با اسپری رو دیوار بنویس مرگ بر آخوند`}
+                  placeholder={`مثلاً: با اسپری روی دیوار بنویس "مرگ بر خامنه‌ای"`}
                   value={userPrompt}
                   onChange={(e) => setUserPrompt(e.target.value)}
                 />
@@ -315,7 +312,7 @@ const App: React.FC = () => {
               ) : (
                 <BananaIcon className="w-7 h-7" />
               )}
-              {isLoading ? 'Generating...' : 'Generate Image'}
+              {isLoading ? 'در حال ساخت...' : 'بساز برام'}
             </button>
           </div>
         )}

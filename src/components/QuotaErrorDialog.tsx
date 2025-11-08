@@ -16,12 +16,12 @@ const QuotaErrorDialog: React.FC<QuotaErrorDialogProps> = ({ onClose }) => {
         <div className="bg-red-600/20 p-4 rounded-full mb-6">
           <HourglassIcon className="w-12 h-12 text-red-400" />
         </div>
-        <h2 className="text-3xl font-bold text-white mb-4">سهمیه رایگان شما تمام شد</h2>
+        <h2 className="text-3xl font-bold text-white mb-4">سهمیه رایگان تمام شد</h2>
         <p className="text-gray-300 mb-6 leading-relaxed">
-          متاسفانه سهمیه استفاده رایگان روزانه شما (۵۰ درخواست در روز) برای مدل هوش مصنوعی به پایان رسیده است. این سهمیه هر ۲۴ ساعت یکبار تمدید می‌شود.
+          متاسفانه تمام کلیدهای API رایگان به سقف استفاده روزانه خود رسیده‌اند. این سهمیه هر ۲۴ ساعت یکبار تمدید می‌شود. لطفاً فردا دوباره تلاش کنید.
         </p>
         <p className="text-gray-400 mb-8 text-sm">
-          برای استفاده بدون محدودیت، می‌توانید با فعال‌سازی پرداخت در پروژه گوگل کلاد خود، از برنامه به صورت نامحدود استفاده کنید.
+          برای استفاده بدون محدودیت، می‌توانید با فعال‌سازی پرداخت در پروژه گوگل کلاد خود و استفاده از کلید شخصی، از برنامه به صورت نامحدود استفاده کنید.
           <br/>
           <a
             href="https://ai.google.dev/gemini-api/docs/billing"
